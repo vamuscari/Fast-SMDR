@@ -83,6 +83,9 @@ func parseBuffer(buf []byte) {
 	data := strings.Split(fmt.Sprintf("%s", buf), ",")
 	if len(data) != 30 {
 		log.Printf("Expeceted 30 columns: Received %d", len(data))
+		for i, v := range data {
+			fmt.Printf("%d: %s", i, v)
+		}
 		return
 	}
 	log.Printf("Received data successfuly")
