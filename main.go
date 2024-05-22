@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 )
@@ -19,7 +20,6 @@ import (
 var logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 func main() {
-
 	var port int = 514
 	var err error
 	var filter net.IP
@@ -109,44 +109,44 @@ func handleConnection(conn net.Conn, db *sqlx.DB) {
 }
 
 type SMDR_Packet struct {
-	CallStart                   sql.NullTime   `db:"CallStart"`
-	ConnectedTime               sql.NullString `db:"ConnectedTime"`
-	RingTime                    sql.NullInt64  `db:"RingTime"`
-	Caller                      sql.NullString `db:"Caller"`
-	CallDirection               sql.NullString `db:"CallDirection"`
-	CalledNumber                sql.NullString `db:"CalledNumber"`
-	DialedNumber                sql.NullString `db:"DialedNumber"`
-	Account                     sql.NullString `db:"Account"`
-	IsInternal                  sql.NullBool   `db:"IsInternal"`
-	CallId                      sql.NullInt64  `db:"CallId"`
-	Continuation                sql.NullBool   `db:"Continuation"`
-	Party1Device                sql.NullString `db:"Party1Device"`
-	Party1Name                  sql.NullString `db:"Party1Name"`
-	Party2Device                sql.NullString `db:"Party2Device"`
-	Party2Name                  sql.NullString `db:"Party2Name"`
-	ExternalTargeterId          sql.NullString `db:"ExternalTargeterId"`
-	HoldTime                    sql.NullInt64  `db:"HoldTime"`
-	ParkTime                    sql.NullInt64  `db:"ParkTime"`
-	AuthValid                   sql.NullString `db:"AuthValid"`
-	AuthCode                    sql.NullString `db:"AuthCode"`
-	UserCharged                 sql.NullString `db:"UserCharged"`
-	CallCharge                  sql.NullString `db:"CallCharge"`
-	Currency                    sql.NullString `db:"Currency"`
-	AmountatLastUserChange      sql.NullString `db:"AmountatLastUserChange"`
-	CallUnits                   sql.NullString `db:"CallUnits"`
-	UnitsatLastUserChange       sql.NullString `db:"UnitsatLastUserChange"`
-	CostperUnit                 sql.NullString `db:"CostperUnit"`
-	MarkUp                      sql.NullString `db:"MarkUp"`
-	ExternalTargetingCause      sql.NullString `db:"ExternalTargetingCause"`
-	ExternalTargetedNumber      sql.NullString `db:"ExternalTargetedNumber"`
-	CallingPartyServerIpAddress sql.NullString `db:"CallingPartyServerIpAddress"`
-	UniqueCallIDForTheCallerExt sql.NullString `db:"UniqueCallIDForTheCallerExt"`
-	CalledPartyServerIP         sql.NullString `db:"CalledPartyServerIP"`
-	UniqueCallIDforCalledExt    sql.NullString `db:"UniqueCallIDforCalledExt"`
-	SMDRRecordTime              sql.NullTime   `db:"SMDRRecordTime"`
-	CallerConsentDirective      sql.NullString `db:"CallerConsentDirective"`
-	CallingNumberVerification   sql.NullString `db:"CallingNumberVerification"`
-	Undefined                   sql.NullString `db:"Undefined"`
+	CallStart                   sql.NullTime    `db:"CallStart"`
+	ConnectedTime               pgtype.Interval `db:"ConnectedTime"`
+	RingTime                    sql.NullInt64   `db:"RingTime"`
+	Caller                      sql.NullString  `db:"Caller"`
+	CallDirection               sql.NullString  `db:"CallDirection"`
+	CalledNumber                sql.NullString  `db:"CalledNumber"`
+	DialedNumber                sql.NullString  `db:"DialedNumber"`
+	Account                     sql.NullString  `db:"Account"`
+	IsInternal                  sql.NullBool    `db:"IsInternal"`
+	CallId                      sql.NullInt64   `db:"CallId"`
+	Continuation                sql.NullBool    `db:"Continuation"`
+	Party1Device                sql.NullString  `db:"Party1Device"`
+	Party1Name                  sql.NullString  `db:"Party1Name"`
+	Party2Device                sql.NullString  `db:"Party2Device"`
+	Party2Name                  sql.NullString  `db:"Party2Name"`
+	ExternalTargeterId          sql.NullString  `db:"ExternalTargeterId"`
+	HoldTime                    sql.NullInt64   `db:"HoldTime"`
+	ParkTime                    sql.NullInt64   `db:"ParkTime"`
+	AuthValid                   sql.NullString  `db:"AuthValid"`
+	AuthCode                    sql.NullString  `db:"AuthCode"`
+	UserCharged                 sql.NullString  `db:"UserCharged"`
+	CallCharge                  sql.NullString  `db:"CallCharge"`
+	Currency                    sql.NullString  `db:"Currency"`
+	AmountatLastUserChange      sql.NullString  `db:"AmountatLastUserChange"`
+	CallUnits                   sql.NullString  `db:"CallUnits"`
+	UnitsatLastUserChange       sql.NullString  `db:"UnitsatLastUserChange"`
+	CostperUnit                 sql.NullString  `db:"CostperUnit"`
+	MarkUp                      sql.NullString  `db:"MarkUp"`
+	ExternalTargetingCause      sql.NullString  `db:"ExternalTargetingCause"`
+	ExternalTargetedNumber      sql.NullString  `db:"ExternalTargetedNumber"`
+	CallingPartyServerIpAddress sql.NullString  `db:"CallingPartyServerIpAddress"`
+	UniqueCallIDForTheCallerExt sql.NullString  `db:"UniqueCallIDForTheCallerExt"`
+	CalledPartyServerIP         sql.NullString  `db:"CalledPartyServerIP"`
+	UniqueCallIDforCalledExt    sql.NullString  `db:"UniqueCallIDforCalledExt"`
+	SMDRRecordTime              sql.NullTime    `db:"SMDRRecordTime"`
+	CallerConsentDirective      sql.NullString  `db:"CallerConsentDirective"`
+	CallingNumberVerification   sql.NullString  `db:"CallingNumberVerification"`
+	Undefined                   sql.NullString  `db:"Undefined"`
 }
 
 func parseBuffer(buf []byte) (SMDR_Packet, error) {
@@ -162,7 +162,7 @@ func parseBuffer(buf []byte) (SMDR_Packet, error) {
 	}
 
 	smdr.CallStart = validateDateTime(arr[0])
-	smdr.ConnectedTime = validateString(arr[1])
+	smdr.ConnectedTime = validateInterval(arr[1])
 	smdr.RingTime = validateInt64(arr[2])
 	smdr.Caller = validateString(arr[3])
 	smdr.CallDirection = validateString(arr[4])
@@ -201,6 +201,36 @@ func parseBuffer(buf []byte) (SMDR_Packet, error) {
 	smdr.Undefined = validateString(arr[37])
 
 	return smdr, nil
+}
+
+// Expects 00:00:00 input. Hour:Minute:Second
+func validateInterval(s string) pgtype.Interval {
+	timeArr := strings.Split(s, ":")
+	if len(timeArr) != 3 {
+		return pgtype.Interval{Valid: false}
+	}
+	second, err := strconv.ParseInt(timeArr[2], 10, 0)
+	if err != nil {
+		return pgtype.Interval{Valid: false}
+	}
+
+	minute, err := strconv.ParseInt(timeArr[1], 10, 0)
+	if err != nil {
+		return pgtype.Interval{Valid: false}
+	}
+
+	hour, err := strconv.ParseInt(timeArr[0], 10, 0)
+	if err != nil {
+		return pgtype.Interval{Valid: false}
+	}
+
+	var ms int64 = 0
+	ms = ms + (second * 1000)
+	ms = ms + (minute * 60000)
+	ms = ms + (hour * 3600000000)
+
+	// not converting days and months since it is VERY unlikley and will have a performance cost.
+	return pgtype.Interval{Months: 0, Days: 0, Microseconds: ms, Valid: true}
 }
 
 func validateDateTime(s string) sql.NullTime {
