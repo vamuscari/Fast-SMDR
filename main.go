@@ -110,7 +110,7 @@ func handleConnection(conn net.Conn, db *sqlx.DB) {
 
 type SMDR_Packet struct {
 	CallStart                   sql.NullTime   `db:"CallStart"`
-	ConnectedTime               sql.NullTime   `db:"ConnectedTime"`
+	ConnectedTime               sql.NullString `db:"ConnectedTime"`
 	RingTime                    sql.NullInt64  `db:"RingTime"`
 	Caller                      sql.NullString `db:"Caller"`
 	CallDirection               sql.NullString `db:"CallDirection"`
@@ -162,7 +162,7 @@ func parseBuffer(buf []byte) (SMDR_Packet, error) {
 	}
 
 	smdr.CallStart = validateDateTime(arr[0])
-	smdr.ConnectedTime = validateTime(arr[1])
+	smdr.ConnectedTime = validateString(arr[1])
 	smdr.RingTime = validateInt64(arr[2])
 	smdr.Caller = validateString(arr[3])
 	smdr.CallDirection = validateString(arr[4])
