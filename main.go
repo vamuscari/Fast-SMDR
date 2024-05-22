@@ -152,13 +152,20 @@ func parseBuffer(buf []byte) (SMDR_Packet, error) {
 
 	var smdr SMDR_Packet
 
-	arr := strings.Split(fmt.Sprintf("%s", buf), ",")
+	//  0 \r\n\u0000\u0000
+	str := string(buf)
+	newline := strings.Index(str, "\n")
+	if newline > 0 {
+		str = str[:newline]
+	}
+	arr := strings.Split(str, ",")
 	if len(arr) != 38 {
 		for i, v := range arr {
 			fmt.Printf("%d: %s\n", (i + 1), v)
 		}
 		return smdr, errors.New(fmt.Sprintf("parseBuffer: %d columns received instead of 38", len(arr)))
 	}
+
 	smdr = SMDR_Packet{
 		CallStart:                   validateDateTime(arr[0]),
 		ConnectedTime:               validateInterval(arr[1]),
