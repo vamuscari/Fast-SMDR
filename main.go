@@ -160,45 +160,46 @@ func parseBuffer(buf []byte) (SMDR_Packet, error) {
 		}
 		return smdr, errors.New(fmt.Sprintf("parseBuffer: %d columns received instead of 38", len(arr)))
 	}
-
-	smdr.CallStart = validateDateTime(arr[0])
-	smdr.ConnectedTime = validateInterval(arr[1])
-	smdr.RingTime = validateInt64(arr[2])
-	smdr.Caller = validateString(arr[3])
-	smdr.CallDirection = validateString(arr[4])
-	smdr.CalledNumber = validateString(arr[5])
-	smdr.DialedNumber = validateString(arr[6])
-	smdr.Account = validateString(arr[7])
-	smdr.IsInternal = validateBool(arr[8])
-	smdr.CallId = validateInt64(arr[9])
-	smdr.Continuation = validateBool(arr[10])
-	smdr.Party1Device = validateString(arr[11])
-	smdr.Party1Name = validateString(arr[12])
-	smdr.Party2Device = validateString(arr[13])
-	smdr.Party2Name = validateString(arr[14])
-	smdr.ExternalTargeterId = validateString(arr[15])
-	smdr.HoldTime = validateInt64(arr[16])
-	smdr.ParkTime = validateInt64(arr[17])
-	smdr.AuthValid = validateString(arr[18])
-	smdr.AuthCode = validateString(arr[19])
-	smdr.UserCharged = validateString(arr[20])
-	smdr.CallCharge = validateString(arr[21])
-	smdr.Currency = validateString(arr[22])
-	smdr.AmountatLastUserChange = validateString(arr[23])
-	smdr.CallUnits = validateString(arr[24])
-	smdr.UnitsatLastUserChange = validateString(arr[25])
-	smdr.CostperUnit = validateString(arr[26])
-	smdr.MarkUp = validateString(arr[27])
-	smdr.ExternalTargetingCause = validateString(arr[28])
-	smdr.ExternalTargetedNumber = validateString(arr[29])
-	smdr.CallingPartyServerIpAddress = validateString(arr[30])
-	smdr.UniqueCallIDForTheCallerExt = validateString(arr[31])
-	smdr.CalledPartyServerIP = validateString(arr[32])
-	smdr.UniqueCallIDforCalledExt = validateString(arr[33])
-	smdr.SMDRRecordTime = validateDateTime(arr[34])
-	smdr.CallerConsentDirective = validateString(arr[35])
-	smdr.CallingNumberVerification = validateString(arr[36])
-	smdr.Undefined = validateString(arr[37])
+	smdr = SMDR_Packet{
+		CallStart:                   validateDateTime(arr[0]),
+		ConnectedTime:               validateInterval(arr[1]),
+		RingTime:                    validateInt64(arr[2]),
+		Caller:                      validateString(arr[3]),
+		CallDirection:               validateString(arr[4]),
+		CalledNumber:                validateString(arr[5]),
+		DialedNumber:                validateString(arr[6]),
+		Account:                     validateString(arr[7]),
+		IsInternal:                  validateBool(arr[8]),
+		CallId:                      validateInt64(arr[9]),
+		Continuation:                validateBool(arr[10]),
+		Party1Device:                validateString(arr[11]),
+		Party1Name:                  validateString(arr[12]),
+		Party2Device:                validateString(arr[13]),
+		Party2Name:                  validateString(arr[14]),
+		ExternalTargeterId:          validateString(arr[15]),
+		HoldTime:                    validateInt64(arr[16]),
+		ParkTime:                    validateInt64(arr[17]),
+		AuthValid:                   validateString(arr[18]),
+		AuthCode:                    validateString(arr[19]),
+		UserCharged:                 validateString(arr[20]),
+		CallCharge:                  validateString(arr[21]),
+		Currency:                    validateString(arr[22]),
+		AmountatLastUserChange:      validateString(arr[23]),
+		CallUnits:                   validateString(arr[24]),
+		UnitsatLastUserChange:       validateString(arr[25]),
+		CostperUnit:                 validateString(arr[26]),
+		MarkUp:                      validateString(arr[27]),
+		ExternalTargetingCause:      validateString(arr[28]),
+		ExternalTargetedNumber:      validateString(arr[29]),
+		CallingPartyServerIpAddress: validateString(arr[30]),
+		UniqueCallIDForTheCallerExt: validateString(arr[31]),
+		CalledPartyServerIP:         validateString(arr[32]),
+		UniqueCallIDforCalledExt:    validateString(arr[33]),
+		SMDRRecordTime:              validateDateTime(arr[34]),
+		CallerConsentDirective:      validateString(arr[35]),
+		CallingNumberVerification:   validateString(arr[36]),
+		Undefined:                   validateString(arr[37]),
+	}
 
 	return smdr, nil
 }
