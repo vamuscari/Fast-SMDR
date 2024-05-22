@@ -19,10 +19,13 @@ import (
 var logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 func main() {
+
 	var port int = 514
 	var err error
 	var filter net.IP
 	var dbconn string
+
+	slog.SetDefault(logger)
 
 	// Input Args
 	for i, v := range os.Args {
@@ -49,7 +52,6 @@ func main() {
 		return
 	}
 
-	slog.SetDefault(logger)
 	slog.Info(fmt.Sprintf("Listening on %s\n", ln.Addr().String()))
 
 	db := pgInit(dbconn)
@@ -289,13 +291,19 @@ func pgInit(dbconn string) *sqlx.DB {
 	//db, err := sql.Open("pgx", "postgres://pgx_md5:secret@localhost:5432/avaya?sslmode=disable")
 	db, err := sqlx.Open("pgx", dbconn)
 	if err != nil {
-		log.Fatal("Failed to init postgres DB")
+		slog.Error("Failed to open DB",
+			slog.String("function", "sqlx.open"),
+			slog.Any("err", err))
+		log.Fatal("Failed to open DB")
 	}
 	defer db.Close()
 
 	_, err = db.Exec(pgSchema)
 	if err != nil {
-		log.Fatal("Failed init schema")
+		slog.Error("Failed to init schema",
+			slog.String("function", "db.Exec"),
+			slog.Any("err", err))
+		log.Fatal("Failed to init schema")
 	}
 
 	return db
