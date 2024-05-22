@@ -8,7 +8,6 @@ import (
 	"log/slog"
 	"net"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -202,17 +201,7 @@ func parseBuffer(buf []byte) (SMDR_Packet, error) {
 		Undefined:                   validateString(arr[37]),
 	}
 
-	structPrinter(smdr)
-
 	return smdr, nil
-}
-
-func structPrinter(t any) {
-	fields := reflect.VisibleFields(reflect.TypeOf(t))
-	for _, field := range fields {
-		fmt.Printf("Key: %s\tType: %s\n", field.Name, field.Type)
-		fmt.Println(reflect.ValueOf(field.Type.Kind()))
-	}
 }
 
 // Expects 00:00:00 input. Hour:Minute:Second
