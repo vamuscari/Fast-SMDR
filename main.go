@@ -341,8 +341,8 @@ CostperUnit,
 MarkUp,                    
 ExternalTargetingCause,    
 ExternalTargetedNumber,    
-CallingPartyServerIpAddress
-UniqueCallIDForTheCallerExt
+CallingPartyServerIpAddress,
+UniqueCallIDForTheCallerExt,
 CalledPartyServerIP,       
 UniqueCallIDforCalledExt,  
 SMDRRecordTime,            
