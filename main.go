@@ -296,7 +296,6 @@ func pgInit(dbconn string) *sqlx.DB {
 			slog.Any("err", err))
 		log.Fatal("Failed to open DB")
 	}
-	defer db.Close()
 
 	_, err = db.Exec(pgSchema)
 	if err != nil {
