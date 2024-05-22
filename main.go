@@ -22,6 +22,7 @@ func main() {
 	var port int = 514
 	var err error
 	var filter net.IP
+	var dbconn string
 
 	// Input Args
 	for i, v := range os.Args {
@@ -32,10 +33,14 @@ func main() {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			// filter address
+			// Filter address
 		case "-f":
 			filter = net.ParseIP(os.Args[(i + 1)])
+			// Database string
+		case "-d":
+			dbconn = os.Args[(i + 1)]
 		}
+
 	}
 
 	ln, err := net.Listen("tcp4", fmt.Sprintf(":%d", port))
@@ -47,7 +52,7 @@ func main() {
 	slog.SetDefault(logger)
 	slog.Info(fmt.Sprintf("Listening on %s\n", ln.Addr().String()))
 
-	pgInit()
+	db := pgInit(dbconn)
 
 	for {
 		conn, err := ln.Accept()
@@ -278,13 +283,22 @@ CREATE TABLE IF NOT EXISTS AvayaData(
 );
 `
 
-func pgInit() {
-	db, err := sql.Open("pgx", "postgres://pgx_md5:secret@localhost:5432/avaya?sslmode=disable")
+// Open connection to PG DB. If connection cannot be opened
+// exit fatal to prevent running unregulated.
+func pgInit(dbconn string) *sqlx.DB {
+	//db, err := sql.Open("pgx", "postgres://pgx_md5:secret@localhost:5432/avaya?sslmode=disable")
+	db, err := sqlx.Open("pgx", dbconn)
 	if err != nil {
 		log.Fatal("Failed to init postgres DB")
 	}
+	defer db.Close()
 
-	db.Exec(pgSchema)
+	_, err = db.Exec(pgSchema)
+	if err != nil {
+		log.Fatal("Failed init schema")
+	}
+
+	return db
 
 }
 
@@ -370,16 +384,9 @@ VALUES(
 :Undefined)
 `
 
-func pgInsertSMDR(smdr SMDR_Packet) {
+func pgInsertSMDR(db sqlx.DB, smdr SMDR_Packet) {
 
-	db, err := sqlx.Open("pgx", "postgres://pgx_md5:secret@localhost:5432/avaya?sslmode=disable")
-	if err != nil {
-		slog.Error("Failed to insert",
-			slog.String("function", "sqlx.open"),
-			slog.Any("err", err))
-	}
-
-	_, err = db.NamedQuery(insertQuery, smdr)
+	_, err := db.NamedQuery(insertQuery, smdr)
 	if err != nil {
 		slog.Error("Failed to insert",
 			slog.String("function", "db.NamedQuery"),
