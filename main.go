@@ -62,7 +62,7 @@ func main() {
 		}
 
 		if checkConnection(conn, filter) {
-			go handleConnection(conn)
+			go handleConnection(conn, db)
 		} else {
 			conn.Close()
 		}
@@ -83,7 +83,7 @@ func checkConnection(conn net.Conn, filter net.IP) bool {
 	return false
 }
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, db *sqlx.DB) {
 	defer conn.Close()
 
 	buf := make([]byte, 2096)
@@ -102,7 +102,7 @@ func handleConnection(conn net.Conn) {
 			slog.Any("err", err))
 	}
 
-	pgInsertSMDR(smdr)
+	pgInsertSMDR(db, smdr)
 
 }
 
@@ -384,7 +384,7 @@ VALUES(
 :Undefined)
 `
 
-func pgInsertSMDR(db sqlx.DB, smdr SMDR_Packet) {
+func pgInsertSMDR(db *sqlx.DB, smdr SMDR_Packet) {
 
 	_, err := db.NamedQuery(insertQuery, smdr)
 	if err != nil {
