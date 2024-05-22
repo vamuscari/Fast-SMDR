@@ -43,7 +43,6 @@ func main() {
 		case "-d":
 			dbconn = os.Args[(i + 1)]
 		}
-
 	}
 
 	ln, err := net.Listen("tcp4", fmt.Sprintf(":%d", port))
@@ -235,19 +234,11 @@ func validateInterval(s string) pgtype.Interval {
 }
 
 func validateDateTime(s string) sql.NullTime {
-	dt, err := time.Parse(time.DateTime, s)
+	dt, err := time.Parse("2006/01/02 15:04:05", s)
 	if err != nil {
 		return sql.NullTime{Valid: false}
 	}
 	return sql.NullTime{Time: dt, Valid: true}
-}
-
-func validateTime(s string) sql.NullTime {
-	t, err := time.Parse(time.TimeOnly, s)
-	if err != nil {
-		return sql.NullTime{Valid: false}
-	}
-	return sql.NullTime{Time: t, Valid: true}
 }
 
 func validateString(s string) sql.NullString {
