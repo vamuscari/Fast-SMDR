@@ -19,3 +19,8 @@
 ```
 Fast-SMDR -p 514 -f 10.1.1.100 -d "postgres://pgx_md5:secret@localhost:5432/avaya?sslmode=disable"
 ```
+
+## Getting Started
+
+go to one of the folowing for more on running on a specific OS.
+
