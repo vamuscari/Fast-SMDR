@@ -232,9 +232,9 @@ func validateInterval(s string) pgtype.Interval {
 	}
 
 	var ms int64 = 0
-	ms = ms + (second * 1000)
-	ms = ms + (minute * 60000)
-	ms = ms + (hour * 3600000000)
+	ms = ms + (second * 1e6)
+	ms = ms + (minute * 60e6)
+	ms = ms + (hour * 3600e6)
 
 	// not converting days and months since it is VERY unlikley and will have a performance cost.
 	return pgtype.Interval{Months: 0, Days: 0, Microseconds: ms, Valid: true}
