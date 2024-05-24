@@ -53,8 +53,6 @@ func main() {
 
 	slog.Info(fmt.Sprintf("Listening on %s\n", ln.Addr().String()))
 
-	db := pgInit(dbconn)
-
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
@@ -63,7 +61,7 @@ func main() {
 		}
 
 		if checkConnection(conn, filter) {
-			go handleConnection(conn, db)
+			go handleConnection(conn, dbconn)
 		} else {
 			conn.Close()
 		}
@@ -84,7 +82,7 @@ func checkConnection(conn net.Conn, filter net.IP) bool {
 	return false
 }
 
-func handleConnection(conn net.Conn, db *sqlx.DB) {
+func handleConnection(conn net.Conn, dbconn string) {
 	defer conn.Close()
 
 	buf := make([]byte, 2096)
@@ -103,6 +101,7 @@ func handleConnection(conn net.Conn, db *sqlx.DB) {
 			slog.Any("err", err))
 	}
 
+	db := pgInit(dbconn)
 	pgInsertSMDR(db, smdr)
 
 }
@@ -422,10 +421,13 @@ VALUES(
 
 func pgInsertSMDR(db *sqlx.DB, smdr SMDR_Packet) {
 
+	defer db.Close()
+
 	_, err := db.NamedQuery(insertQuery, smdr)
 	if err != nil {
 		slog.Error("Failed to insert",
 			slog.String("function", "db.NamedQuery"),
 			slog.Any("err", err))
 	}
+
 }
